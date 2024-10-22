@@ -1,11 +1,20 @@
 from bitcoinCore import bitcoinCore, calculation
 
-# for RegTest
-core = bitcoinCore("tokimay", "r@eza", "http://127.0.0.1", 18443)
-# for MainNet
-# core = bitcoinCore("tokimay", "r@eza", "http://127.0.0.1", 8332)
+user = 'tokimay'  # change with your own
+password = 'r@eza'  # change with your own
 
-addressInfo = core.getAddressInfo('bcrt1qlftz77jay2x0phkfp4hwcswrypvc63d30kas7u')
+# for RegTest
+core = bitcoinCore(user, password, "http://127.0.0.1", 18443)
+# for MainNet
+# core = bitcoinCore(user, password, "http://127.0.0.1", 8332)
+
+#
+""" if your address is generated in bitcoinCore """
+myAddress = 'bcrt1qlftz77jay2x0phkfp4hwcswrypvc63d30kas7u'
+addressInfo = core.getAddressInfo(myAddress)
+myPubKey = addressInfo['result']['pubkey']
+""" if address is generated in third party wallet """
+# myPubKey = "insert your pubKey"
 
 tempBlock = core.getBlockTemplate()
 
@@ -30,14 +39,14 @@ coinbase, cBiD = calculation.coinbase(version=tempBlock['result']['version'], ex
                                       height=tempBlock['result']['height'],
                                       coinbaseAmount=tempBlock['result']['coinbasevalue'],
                                       scriptPubkeyWitness=scriptPubkeyWitness,
-                                      addressPubKey=addressInfo['result']['pubkey'])
+                                      addressPubKey=myPubKey)
 
 transactionsRaw = coinbase + transactionsRaw
 # coinBase transaction ID as first transaction ID
 merkleBranch.insert(0, cBiD)
 lenTransactions = calculation.lenVar(len(merkleBranch))
 merkleRoot = calculation.reverse(calculation.merkleRoot(branchList=merkleBranch))
-nTimeNew = calculation.reverse((hex(tempBlock['curtime']))[2:])
+nTimeNew = calculation.reverse((hex(tempBlock['result']['curtime']))[2:])
 lenNounce = int(len(tempBlock['result']['noncerange']) / 2)
 
 for nonce in range(0, nonceRange):

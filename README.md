@@ -12,3 +12,6 @@ reviewing code learn you the following topics: <br>
 * calculate coinbase transaction (scriptSig, scriptPubkey, ...)
 * generate raw block (block serialization)
 * submit new block on blockchain
+
+
+***[In regtest you first must mine at least 500 block. then start using code. ](https://bitcoin.stackexchange.com/questions/101927/bitcoin-in-regtest-throw-bad-cb-height-at-block-no-500)***

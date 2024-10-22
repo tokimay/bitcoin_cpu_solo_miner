@@ -328,12 +328,6 @@ class calculation:
             return calculation.merkleRoot(MerkleRootTemp)
 
     @staticmethod
-    def time(currentTime: int, forwardHours: int, forwardMinute: int) -> str:
-        time_nTime = datetime.fromtimestamp(currentTime)
-        new_time_nTime = time_nTime + timedelta(hours=forwardHours, minutes=forwardMinute)
-        return hex(int(new_time_nTime.timestamp()))[2:]
-
-    @staticmethod
     def headerHash(header: str) -> str:
         solutionHash = (hashlib.sha256(hashlib.sha256(bytearray.fromhex(header)).digest()).digest())[::-1].hex()
         return solutionHash

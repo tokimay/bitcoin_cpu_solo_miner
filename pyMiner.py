@@ -58,7 +58,7 @@ while True:
     merkleRoot = calculation.reverse(calculation.merkleRoot(branchList=merkleBranch))
     nTimeNew = calculation.reverse((hex(tempBlock['result']['curtime']))[2:])
     lenNounce = int(len(tempBlock['result']['noncerange']) / 2)
-
+    #nonceRange = 10_000_000
     while nonce <= nonceRange:
         nonce += 1
         blockHeader = ver + previousBlockhash + merkleRoot + nTimeNew + bits + (hex(nonce)[2:]).zfill(8)
@@ -74,6 +74,6 @@ while True:
                 print(f"succeed \nheight  : {b['result']['blocks']} \nhash    :{b['result']['bestblockhash']}")
                 exit(0)
     if nonce >= nonceRange:
-        print('all nonce range checked.\n try new extra nounce to change coinbase hash -> merkle root -> header hash')
+        print('all nonce range checked.\ntry new extra nounce to change coinbase hash -> merkle root -> header hash')
         newExtraNonce = True
 

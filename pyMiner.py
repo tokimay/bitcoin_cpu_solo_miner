@@ -2,8 +2,8 @@ import random
 
 from bitcoinCore import bitcoinCore, calculation
 
-user = 'tokimay'  # change with your own
-password = 'r@eza'  # change with your own
+user = 'user'  # change with your own
+password = 'userpass'  # change with your own
 
 # for RegTest
 core = bitcoinCore(user, password, "http://127.0.0.1", 18443)
@@ -12,7 +12,7 @@ core = bitcoinCore(user, password, "http://127.0.0.1", 18443)
 
 #
 """ if your address is generated in bitcoinCore """
-myAddress = 'bcrt1qlftz77jay2x0phkfp4hwcswrypvc63d30kas7u'  # change with your own
+myAddress = 'Your bitcoin address'  # change with your own
 addressInfo = core.getAddressInfo(myAddress)
 myPubKey = addressInfo['result']['pubkey']
 """ if address is generated in third party wallet """

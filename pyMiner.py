@@ -21,6 +21,7 @@ myPubKey = addressInfo['result']['pubkey']
 # myPubKey = "insert your pubKey"
 
 newExtraNonce = True
+extraNonce = 0
 nonce = 0
 refreshThreshold = 100_000_000
 
@@ -30,9 +31,9 @@ while True:
         extraNonce = random.randint(0x0, 0xffff)
         newExtraNonce = False
         refreshThreshold = 100_000_000
-        print('extraNonce', extraNonce)
+        print('extraNonce:', extraNonce)
     tempBlock = core.getBlockTemplate()
-    print('block template refreshed')
+    print('block template refreshed.')
     target = int(tempBlock['result']['target'], 16)
 
     # if you are on RegTest make it a little harder
@@ -65,16 +66,15 @@ while True:
     lenTransactions = calculation.lenVar(len(merkleBranch))
     merkleRoot = calculation.reverse(calculation.merkleRoot(branchList=merkleBranch))
     nTimeNew = calculation.reverse((hex(tempBlock['result']['curtime']))[2:])
-    lenNounce = int(len(tempBlock['result']['noncerange']) / 2)
     print('start checking nonce range:')
     while nonce <= nonceRange:
         nonce += 1
         blockHeader = ver + previousBlockhash + merkleRoot + nTimeNew + bits + (hex(nonce)[2:]).zfill(8)
         blockRaw = blockHeader + lenTransactions + transactionsRaw
         solution = calculation.headerHash(blockHeader)
-        if nonce % 1_000_000 == 0 and nonce != 0:
+        if nonce % 1_000_000 == 0:
             print(f"{int(nonce/1_000_000)} mega nonce number checked {datetime.datetime.now()}")
-            if nonce % refreshThreshold == 0 and nonce != 0:
+            if nonce % refreshThreshold == 0:
                 nonce += 1
                 refreshThreshold += 100_000_000
                 print('going to re-fetch block template')

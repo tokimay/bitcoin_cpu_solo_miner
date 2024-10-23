@@ -4,7 +4,6 @@ import hashlib
 import json
 import random
 import urllib.request
-from datetime import datetime, timedelta
 from pprint import pprint
 
 
@@ -45,7 +44,6 @@ class bitcoinCore:
         """
         if templateRequest is None:
             templateRequest = {"rules": ["segwit"]}
-            #templateRequest = {"rules": ["Legacy"]}
         data = json.dumps({
             "jsonrpc": "1.0",
             "id": self.id,

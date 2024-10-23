@@ -1,6 +1,5 @@
 import datetime
 import random
-
 from bitcoin import bitcoinCore, calculation
 
 

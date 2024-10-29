@@ -40,9 +40,10 @@ while True:
     if isRegTest:
         target = int(target / pow(2, 24))
 
-    ver = (tempBlock['result']['version'].to_bytes((tempBlock['result']['version'].bit_length() + 7) // 8, 'little')).hex()
+    ver = ((tempBlock['result']['version'].to_bytes((tempBlock['result']['version'].bit_length() + 7) // 8, 'little')
+            ).hex()).zfill(8)
     previousBlockhash = calculation.reverse(tempBlock['result']['previousblockhash'])
-    bits = calculation.reverse(tempBlock['result']['bits'])
+    bits = (calculation.reverse(tempBlock['result']['bits'])).zfill(8)
     nonceRange = int(tempBlock['result']['noncerange'], 16)
 
     merkleBranch = []
@@ -65,7 +66,7 @@ while True:
     merkleBranch.insert(0, cBiD)
     lenTransactions = calculation.lenVar(len(merkleBranch))
     merkleRoot = calculation.reverse(calculation.merkleRoot(branchList=merkleBranch))
-    nTimeNew = calculation.reverse((hex(tempBlock['result']['curtime']))[2:])
+    nTimeNew = (calculation.reverse((hex(tempBlock['result']['curtime']))[2:])).zfill(8)
     print('start checking nonce range:')
     while nonce <= nonceRange:
         nonce += 1

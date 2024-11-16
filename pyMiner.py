@@ -1,17 +1,17 @@
 import datetime
 import random
-from bitcoin import bitcoinCore, calculation
+from bitcoin import Bitcoincore, Calculation
 
 
 isRegTest = True
 user = 'user'  # change with your own
 password = 'userpass'  # change with your own
-myAddress = 'bitcoinAddress'  # change with your own
+myAddress = 'YOUR_BTC_ADDRESS'  # change with your own
 
 if isRegTest:
-    core = bitcoinCore(user=user, password=password, host="http://127.0.0.1", port=18443)
+    core = Bitcoincore(user=user, password=password, host="http://127.0.0.1", port=18443)
 else:
-    core = bitcoinCore(user=user, password=password, host="http://127.0.0.1", port=8332)
+    core = Bitcoincore(user=user, password=password, host="http://127.0.0.1", port=8332)
 
 
 """ if your address is generated in bitcoinCore """
@@ -40,12 +40,15 @@ while True:
     if isRegTest:
         target = int(target / pow(2, 24))
 
-    ver = ((tempBlock['result']['version'].to_bytes((tempBlock['result']['version'].bit_length() + 7) // 8, 'little')
-            ).hex()).zfill(8)
-    previousBlockhash = calculation.reverse(tempBlock['result']['previousblockhash'])
-    bits = (calculation.reverse(tempBlock['result']['bits'])).zfill(8)
-    nonceRange = int(tempBlock['result']['noncerange'], 16)
+    ''' block header '''
+    # 4 bytes version
+    version = tempBlock['result']['version']
+    ver = (Calculation.reverse((hex(version))[2:])).zfill(8)
 
+    # 32 bytes previous block hash
+    previousBlockhash = Calculation.reverse(tempBlock['result']['previousblockhash'])
+
+    # 32 bytes merkle root
     merkleBranch = []
     transactionsRaw = ''
     if len(tempBlock['result']['transactions']) > 0:
@@ -53,26 +56,39 @@ while True:
         for trx in tempBlock['result']['transactions']:
             merkleBranch.append(trx['txid'])
             transactionsRaw = transactionsRaw + trx['data']
-    scriptPubkeyWitness = tempBlock['result']['default_witness_commitment']
 
-    coinbase, cBiD = calculation.coinbase(version=tempBlock['result']['version'], extraNonce=extraNonce,
+    coinbase, cBiD = Calculation.coinbase(version=tempBlock['result']['version'], extraNonce=extraNonce,
                                           height=tempBlock['result']['height'],
                                           coinbaseAmount=tempBlock['result']['coinbasevalue'],
-                                          scriptPubkeyWitness=scriptPubkeyWitness,
+                                          scriptPubkeyWitness=tempBlock['result']['default_witness_commitment'],
                                           addressPubKey=myPubKey)
 
+    merkleBranch.insert(0, cBiD)   # coinBase transaction ID as first transaction ID
+    merkleRoot = Calculation.merkleRoot(branchList=merkleBranch)
+    merkleRoot = Calculation.reverse(merkleRoot)
+
+    # 4 bytes time
+    time = tempBlock['result']['curtime']
+    time = (Calculation.reverse((hex(time))[2:])).zfill(8)
+
+    # 4 bytes bits
+    bits = tempBlock['result']['bits']
+    bits = (Calculation.reverse(bits)).zfill(8)
+
+    # 4 byte nonce
+    ''' int loop section will be calculated'''
+
+    lenTransactions = Calculation.lenVar(len(merkleBranch))
     transactionsRaw = coinbase + transactionsRaw
-    # coinBase transaction ID as first transaction ID
-    merkleBranch.insert(0, cBiD)
-    lenTransactions = calculation.lenVar(len(merkleBranch))
-    merkleRoot = calculation.reverse(calculation.merkleRoot(branchList=merkleBranch))
-    nTimeNew = (calculation.reverse((hex(tempBlock['result']['curtime']))[2:])).zfill(8)
+
+    nonceRange = int(tempBlock['result']['noncerange'], 16)
     print('start checking nonce range:')
     while nonce <= nonceRange:
         nonce += 1
-        blockHeader = ver + previousBlockhash + merkleRoot + nTimeNew + bits + (hex(nonce)[2:]).zfill(8)
+        blockHeader = (ver + previousBlockhash + merkleRoot +
+                       time + bits + (Calculation.reverse((hex(nonce))[2:])).zfill(8))
         blockRaw = blockHeader + lenTransactions + transactionsRaw
-        solution = calculation.headerHash(blockHeader)
+        solution = Calculation.headerHash(blockHeader)
         if nonce % 1_000_000 == 0:
             print(f"{int(nonce/1_000_000)} mega nonce number checked {datetime.datetime.now()}")
             if nonce % refreshThreshold == 0:

@@ -7,7 +7,7 @@ import urllib.request
 from pprint import pprint
 
 
-class bitcoinCore:
+class Bitcoincore:
     def __init__(self, user: str, password: str, host: str = 'http://127.0.0.1', port: int = 8332):
         self.host = host
         self.port = port
@@ -218,7 +218,7 @@ class bitcoinCore:
             return response
 
 
-class calculation:
+class Calculation:
     def __init__(self):
         pass
 
@@ -279,20 +279,20 @@ class calculation:
 
         scriptSig = (OP_PUSHBYTES_height + height + OP_PUSHBYTES_asciiMessage +
                      asciiMessage + OP_PUSHBYTES_extraNonce + extraNonce)
-        scriptSigSize = calculation.lenVar(len(scriptSig) // 2)
+        scriptSigSize = Calculation.lenVar(len(scriptSig) // 2)
         sequence = 'ffffffff'
         outputCount = '02'
         amount = ''.join(f"{n:02X}" for n in coinbaseAmount.to_bytes(8, byteorder='little'))
         # P2PKH
         scriptPubkey = "76a914" + addressPubKey + "88ac"
-        scriptPubkeySize = calculation.lenVar(len(scriptPubkey) // 2)
+        scriptPubkeySize = Calculation.lenVar(len(scriptPubkey) // 2)
 
         stackItems = '01'
         stackItems_Size = '20'
         stackItemsSize_item = '0000000000000000000000000000000000000000000000000000000000000000'
         lockTime = '00000000'
 
-        scriptPubkeyWitnessSize = calculation.lenVar(len(scriptPubkeyWitness) // 2)
+        scriptPubkeyWitnessSize = Calculation.lenVar(len(scriptPubkeyWitness) // 2)
         amountWitness = '0000000000000000'
         coinbaseRaw = (version + marker + flag + inputCount + txId + vout + scriptSigSize + scriptSig + sequence +
                        outputCount +
@@ -315,15 +315,15 @@ class calculation:
             MerkleRootTemp = []
             for i in range(0, len(branchList) - 1, 2):
                 MerkleRootTemp.append(
-                    calculation.doubleSha256Reverse(
-                        calculation.reverse(branchList[i]) + calculation.reverse(branchList[i + 1]))
+                    Calculation.doubleSha256Reverse(
+                        Calculation.reverse(branchList[i]) + Calculation.reverse(branchList[i + 1]))
                 )
             if len(branchList) % 2 == 1:
                 MerkleRootTemp.append(
-                    calculation.doubleSha256Reverse(
-                        calculation.reverse(branchList[-1]) + calculation.reverse(branchList[-1]))
+                    Calculation.doubleSha256Reverse(
+                        Calculation.reverse(branchList[-1]) + Calculation.reverse(branchList[-1]))
                 )
-            return calculation.merkleRoot(MerkleRootTemp)
+            return Calculation.merkleRoot(MerkleRootTemp)
 
     @staticmethod
     def headerHash(header: str) -> str:
@@ -340,8 +340,8 @@ class calculation:
 
     @staticmethod
     def doubleSha256(data: str) -> str:
-        return calculation.sha256(calculation.sha256(data))
+        return Calculation.sha256(Calculation.sha256(data))
 
     @staticmethod
     def doubleSha256Reverse(data: str) -> str:
-        return bytearray.fromhex(calculation.sha256(calculation.sha256(data)))[::-1].hex()
+        return bytearray.fromhex(Calculation.sha256(Calculation.sha256(data)))[::-1].hex()

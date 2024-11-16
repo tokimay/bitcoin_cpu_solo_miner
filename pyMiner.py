@@ -3,10 +3,10 @@ import random
 from bitcoin import BitcoinCore, Calculation
 
 
-isRegTest = True
-user = 'user'  # change with your own
-password = 'userpass'  # change with your own
-myAddress = 'YOUR_BTC_ADDRESS'  # change with your own
+isRegTest = False
+user = 'tokimay'  # change with your own
+password = 'r@eza'  # change with your own
+myAddress = 'bc1q05205nxlhgwv33gnd5salpp449m2k9ye8dqg72'  # change with your own
 
 if isRegTest:
     core = BitcoinCore(user=user, password=password, host="http://127.0.0.1", port=18443)
@@ -86,7 +86,7 @@ while True:
     while nonce <= nonceRange:
         nonce += 1
         blockHeader = (ver + previousBlockhash + merkleRoot +
-                       time + bits + (Calculation.reverse((hex(nonce))[2:])).zfill(8))
+                       time + bits + (Calculation.reverse((hex(nonce))[2:].zfill(8))))
         blockRaw = blockHeader + lenTransactions + transactionsRaw
         solution = Calculation.headerHash(blockHeader)
         if nonce % 1_000_000 == 0:

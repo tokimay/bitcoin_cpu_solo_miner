@@ -7,7 +7,7 @@ import urllib.request
 from pprint import pprint
 
 
-class Bitcoincore:
+class BitcoinCore:
     def __init__(self, user: str, password: str, host: str = 'http://127.0.0.1', port: int = 8332):
         self.host = host
         self.port = port

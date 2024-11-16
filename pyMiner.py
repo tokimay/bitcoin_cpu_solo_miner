@@ -1,6 +1,6 @@
 import datetime
 import random
-from bitcoin import Bitcoincore, Calculation
+from bitcoin import BitcoinCore, Calculation
 
 
 isRegTest = True
@@ -9,9 +9,9 @@ password = 'userpass'  # change with your own
 myAddress = 'YOUR_BTC_ADDRESS'  # change with your own
 
 if isRegTest:
-    core = Bitcoincore(user=user, password=password, host="http://127.0.0.1", port=18443)
+    core = BitcoinCore(user=user, password=password, host="http://127.0.0.1", port=18443)
 else:
-    core = Bitcoincore(user=user, password=password, host="http://127.0.0.1", port=8332)
+    core = BitcoinCore(user=user, password=password, host="http://127.0.0.1", port=8332)
 
 
 """ if your address is generated in bitcoinCore """

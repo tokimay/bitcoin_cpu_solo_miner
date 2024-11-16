@@ -4,9 +4,9 @@ from bitcoin import BitcoinCore, Calculation
 
 
 isRegTest = False
-user = 'tokimay'  # change with your own
-password = 'r@eza'  # change with your own
-myAddress = 'bc1q05205nxlhgwv33gnd5salpp449m2k9ye8dqg72'  # change with your own
+user = 'user'  # change with your own
+password = 'userpass'  # change with your own
+myAddress = 'YOUR_BTC_ADDRESS'  # change with your own
 
 if isRegTest:
     core = BitcoinCore(user=user, password=password, host="http://127.0.0.1", port=18443)

@@ -43,7 +43,7 @@ while True:
     ''' block header '''
     # 4 bytes version
     version = tempBlock['result']['version']
-    ver = (Calculation.reverse((hex(version))[2:])).zfill(8)
+    version = (Calculation.reverse((hex(version))[2:])).zfill(8)
 
     # 32 bytes previous block hash
     previousBlockhash = Calculation.reverse(tempBlock['result']['previousblockhash'])
@@ -85,7 +85,7 @@ while True:
     print('start checking nonce range:')
     while nonce <= nonceRange:
         nonce += 1
-        blockHeader = (ver + previousBlockhash + merkleRoot +
+        blockHeader = (version + previousBlockhash + merkleRoot +
                        time + bits + (Calculation.reverse((hex(nonce))[2:].zfill(8))))
         blockRaw = blockHeader + lenTransactions + transactionsRaw
         solution = Calculation.headerHash(blockHeader)

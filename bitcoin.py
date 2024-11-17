@@ -274,7 +274,7 @@ class Calculation:
         asciiMessage = 'tokimay'.encode('ascii').hex()  # -> your custom data
         OP_PUSHBYTES_asciiMessage = str(len(asciiMessage))
 
-        extraNonce = str((extraNonce.bit_length() + 7) // 8).zfill(16)
+        extraNonce = hex(extraNonce)[2:].zfill(16)
         OP_PUSHBYTES_extraNonce = str(len(extraNonce))  # it is 16 in my choice
 
         scriptSig = (OP_PUSHBYTES_height + height + OP_PUSHBYTES_asciiMessage +

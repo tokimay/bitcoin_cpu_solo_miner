@@ -4,7 +4,7 @@ from bitcoin import BitcoinCore, Calculation
 
 
 isRegTest = False
-user = 'user'  # change with your own user name
+user = 'user'  # change with your own
 password = 'userpass'  # change with your own
 myAddress = 'YOUR_BTC_ADDRESS'  # change with your own
 

@@ -17,38 +17,38 @@ class BitcoinCore:
         self.id = random.getrandbits(32)
         self.authenticate = base64.b64encode(bytes(self.user + ":" + self.password, "utf8"))
 
-    def setHost(self, host):
+    def set_host(self, host):
         self.host = host
 
-    def setPort(self, port):
+    def set_port(self, port):
         self.port = port
 
-    def setUser(self, user):
+    def set_user(self, user):
         self.user = user
 
-    def setPassword(self, password):
+    def set_password(self, password):
         self.password = password()
 
-    def HOST(self) -> str:
+    def host(self) -> str:
         return self.host
 
-    def PORT(self) -> int:
+    def port(self) -> int:
         return self.port
 
-    def USER(self) -> str:
+    def user(self) -> str:
         return self.user
 
-    def getBlockTemplate(self, templateRequest: dict = None) -> dict:
+    def get_block_template(self, template_request: dict = None) -> dict:
         """
         :return: It returns data needed to construct a block to work on.
         """
-        if templateRequest is None:
-            templateRequest = {"rules": ["segwit"]}
+        if template_request is None:
+            template_request = {"rules": ["segwit"]}
         data = json.dumps({
             "jsonrpc": "1.0",
             "id": self.id,
             "method": "getblocktemplate",
-            "params": [templateRequest]
+            "params": [template_request]
         }).encode()
         request = urllib.request.Request(url=self.RPCurl, data=data,
                                          headers={"Authorization": b"Basic " + self.authenticate})
@@ -60,7 +60,7 @@ class BitcoinCore:
         else:
             return response
 
-    def getMiningInfo(self) -> dict:
+    def get_mining_info(self) -> dict:
         """
         :return: a json object containing mining-related information
         """
@@ -81,7 +81,7 @@ class BitcoinCore:
         else:
             return response
 
-    def getNetworkHash_ps(self, nBlocks: int = 120, height: int = -1) -> dict:
+    def get_network_hash_ps(self, n_blocks: int = 120, height: int = -1) -> dict:
         """
         nBlocks:
         Type: numeric, optional, default=120
@@ -109,7 +109,7 @@ class BitcoinCore:
         else:
             return response
 
-    def prioritiseTransaction(self, txId: str, feeDelta: int, dummy: float = 0.0) -> dict:
+    def prioritise_transaction(self, tx_id: str, fee_delta: int, dummy: float = 0.0) -> dict:
         """
         txId:
         Type: string, required
@@ -133,7 +133,7 @@ class BitcoinCore:
             "jsonrpc": "1.0",
             "id": self.id,
             "method": "prioritisetransaction",
-            "params": [txId, dummy, feeDelta]
+            "params": [tx_id, dummy, fee_delta]
         }).encode()
         request = urllib.request.Request(url=self.RPCurl, data=data,
                                          headers={"Authorization": b"Basic " + self.authenticate})
@@ -145,7 +145,7 @@ class BitcoinCore:
         else:
             return response
 
-    def submitBlock(self, hexData, dummy: str = 'ignored') -> dict:
+    def submit_block(self, hex_data, dummy: str = 'ignored') -> dict:
         """
         hexData:
         Type: string, required
@@ -160,7 +160,7 @@ class BitcoinCore:
         data = json.dumps({
             "id": self.id,
             "method": "submitblock",
-            "params": [hexData]
+            "params": [hex_data]
         }).encode()
         request = urllib.request.Request(url=self.RPCurl, data=data,
                                          headers={"Authorization": b"Basic " + self.authenticate})
@@ -173,7 +173,7 @@ class BitcoinCore:
         else:
             return response
 
-    def getAddressInfo(self, address: str) -> dict:
+    def get_address_info(self, address: str) -> dict:
         """
         address:
         Type: string, required
@@ -197,7 +197,7 @@ class BitcoinCore:
         else:
             return response
 
-    def getBlockchainInfo(self) -> dict:
+    def get_blockchain_info(self) -> dict:
         """
         :return: Returns an object containing various state info regarding blockchain processing.
         """
@@ -223,28 +223,28 @@ class Calculation:
         pass
 
     @staticmethod
-    def intTarget(bits: str) -> int:
+    def int_target(bits: str) -> int:
         # return int((temp['result']['bits'][2:] + '00' * (int(temp['result']['bits'][:2], 16) - 3)).zfill(64), 16)
         bits = bytes.fromhex(bits)
         # Extract the parts.
         byte_length = bits[0] - 3
         significand = bits[1:]
         # Scale the significand by byte_length.
-        targetBytes = significand + b"\x00" * byte_length
+        target_bytes = significand + b"\x00" * byte_length
         # Fill in the leading zeros.
-        targetBytes = b"\x00" * (32 - len(targetBytes)) + targetBytes
-        return int.from_bytes(targetBytes, byteorder='big')
+        target_bytes = b"\x00" * (32 - len(target_bytes)) + target_bytes
+        return int.from_bytes(target_bytes, byteorder='big')
 
     @staticmethod
-    def blockSubsidy(blockHeight: int):
+    def block_subsidy(block_height: int):
         # halving is every 210,000 blocks
-        halving = int(blockHeight / 210000)
-        initialSubsidy = 5000000000  # 50 BTC in satoshi
+        halving = int(block_height / 210000)
+        initial_subsidy = 5000000000  # 50 BTC in satoshi
         # calculate the current block subsidy based on the height
-        return initialSubsidy >> halving  # bit shift right for every halving
+        return initial_subsidy >> halving  # bit shift right for every halving
 
     @staticmethod
-    def lenVar(value: int) -> str:
+    def len_var(value: int) -> str:
         if value < 253:
             return value.to_bytes(1, byteorder='little').hex()
         if value <= 65535:
@@ -256,92 +256,92 @@ class Calculation:
     @staticmethod
     def coinbase(
             version: int,
-            extraNonce: int,
+            extra_nonce: int,
             height: int,
-            coinbaseAmount: int,
-            scriptPubkeyWitness: str,
-            addressPubKey: str) -> tuple[str, str]:
+            coinbase_amount: int,
+            script_pubkey_witness: str,
+            address_pub_key: str) -> tuple[str, str]:
         version = hex(version)[2:]
         marker = '00'
         flag = '01'
-        inputCount = '01'
-        txId = '0000000000000000000000000000000000000000000000000000000000000000'  # '0' * 64
+        input_count = '01'
+        tx_id = '0000000000000000000000000000000000000000000000000000000000000000'  # '0' * 64
         vout = 'ffffffff'
-        # scriptSig
+        # script_sig
         OP_PUSHBYTES_height = str((height.bit_length() + 7) // 8).zfill(2)
         height = (height.to_bytes((height.bit_length() + 7) // 8, 'little')).hex()
 
-        asciiMessage = 'tokimay'.encode('ascii').hex()  # -> your custom data
-        OP_PUSHBYTES_asciiMessage = str(len(asciiMessage))
+        ascii_message = 'tokimay'.encode('ascii').hex()  # -> your custom data
+        OP_PUSHBYTES_ascii_message = str(len(ascii_message))
 
-        extraNonce = hex(extraNonce)[2:].zfill(16)
-        OP_PUSHBYTES_extraNonce = str(len(extraNonce))  # it is 16 in my choice
+        extra_nonce = hex(extra_nonce)[2:].zfill(16)
+        OP_PUSHBYTES_extra_nonce = str(len(extra_nonce))  # it is 16 in my choice
 
-        scriptSig = (OP_PUSHBYTES_height + height + OP_PUSHBYTES_asciiMessage +
-                     asciiMessage + OP_PUSHBYTES_extraNonce + extraNonce)
-        scriptSigSize = Calculation.lenVar(len(scriptSig) // 2)
+        script_sig = (OP_PUSHBYTES_height + height + OP_PUSHBYTES_ascii_message +
+                     ascii_message + OP_PUSHBYTES_extra_nonce + extra_nonce)
+        script_sig_size = Calculation.len_var(len(script_sig) // 2)
         sequence = 'ffffffff'
-        outputCount = '02'
-        amount = ''.join(f"{n:02X}" for n in coinbaseAmount.to_bytes(8, byteorder='little'))
+        output_count = '02'
+        amount = ''.join(f"{n:02X}" for n in coinbase_amount.to_bytes(8, byteorder='little'))
         # P2PKH
-        scriptPubkey = "76a914" + addressPubKey + "88ac"
-        scriptPubkeySize = Calculation.lenVar(len(scriptPubkey) // 2)
+        script_pubkey = "76a914" + address_pub_key + "88ac"
+        script_pubkey_size = Calculation.len_var(len(script_pubkey) // 2)
 
-        stackItems = '01'
-        stackItems_Size = '20'
-        stackItemsSize_item = '0000000000000000000000000000000000000000000000000000000000000000'
-        lockTime = '00000000'
+        stack_items = '01'
+        stack_items_size = '20'
+        stack_items_size_item = '0000000000000000000000000000000000000000000000000000000000000000'
+        lock_time = '00000000'
 
-        scriptPubkeyWitnessSize = Calculation.lenVar(len(scriptPubkeyWitness) // 2)
-        amountWitness = '0000000000000000'
-        coinbaseRaw = (version + marker + flag + inputCount + txId + vout + scriptSigSize + scriptSig + sequence +
-                       outputCount +
-                       amount + scriptPubkeySize + scriptPubkey +
-                       amountWitness + scriptPubkeyWitnessSize + scriptPubkeyWitness +
-                       stackItems + stackItems_Size + stackItemsSize_item + lockTime)
-        coinbaseTxId = (version + inputCount + txId + vout + scriptSigSize + scriptSig + sequence + outputCount +
-                        amount + scriptPubkeySize + scriptPubkey +
-                        amountWitness + scriptPubkeyWitnessSize + scriptPubkeyWitness
-                        + lockTime)
-        coinbaseTxId = (hashlib.sha256(hashlib.sha256(binascii.unhexlify(coinbaseTxId)).digest()).digest())[::-1]
+        script_pubkey_witness_size = Calculation.len_var(len(script_pubkey_witness) // 2)
+        amount_witness = '0000000000000000'
+        coinbase_raw = (version + marker + flag + input_count + tx_id + vout + script_sig_size + script_sig + sequence +
+                       output_count +
+                       amount + script_pubkey_size + script_pubkey +
+                       amount_witness + script_pubkey_witness_size + script_pubkey_witness +
+                       stack_items + stack_items_size + stack_items_size_item + lock_time)
+        coinbase_tx_id = (version + input_count + tx_id + vout + script_sig_size + script_sig + sequence + output_count +
+                        amount + script_pubkey_size + script_pubkey +
+                        amount_witness + script_pubkey_witness_size + script_pubkey_witness
+                        + lock_time)
+        coinbase_tx_id = (hashlib.sha256(hashlib.sha256(binascii.unhexlify(coinbase_tx_id)).digest()).digest())[::-1]
 
-        return coinbaseRaw, coinbaseTxId.hex()
+        return coinbase_raw, coinbase_tx_id.hex()
 
     @staticmethod
-    def merkleRoot(branchList: list) -> str:
-        if len(branchList) == 1:
-            return branchList[0]
+    def merkle_root(branch_list: list) -> str:
+        if len(branch_list) == 1:
+            return branch_list[0]
         else:
-            MerkleRootTemp = []
-            for i in range(0, len(branchList) - 1, 2):
-                MerkleRootTemp.append(
-                    Calculation.doubleSha256Reverse(
-                        Calculation.reverse(branchList[i]) + Calculation.reverse(branchList[i + 1]))
+            merkle_root_temp = []
+            for i in range(0, len(branch_list) - 1, 2):
+                merkle_root_temp.append(
+                    Calculation.double_sha256_reverse(
+                        Calculation.reverse(branch_list[i]) + Calculation.reverse(branch_list[i + 1]))
                 )
-            if len(branchList) % 2 == 1:
-                MerkleRootTemp.append(
-                    Calculation.doubleSha256Reverse(
-                        Calculation.reverse(branchList[-1]) + Calculation.reverse(branchList[-1]))
+            if len(branch_list) % 2 == 1:
+                merkle_root_temp.append(
+                    Calculation.double_sha256_reverse(
+                        Calculation.reverse(branch_list[-1]) + Calculation.reverse(branch_list[-1]))
                 )
-            return Calculation.merkleRoot(MerkleRootTemp)
+            return Calculation.merkle_root(merkle_root_temp)
 
     @staticmethod
-    def headerHash(header: str) -> str:
-        solutionHash = (hashlib.sha256(hashlib.sha256(bytearray.fromhex(header)).digest()).digest())[::-1].hex()
-        return solutionHash
+    def header_hash(header: str) -> str:
+        solution_hash = (hashlib.sha256(hashlib.sha256(bytearray.fromhex(header)).digest()).digest())[::-1].hex()
+        return solution_hash
 
     @staticmethod
-    def reverse(hashString: str) -> str:
-        return bytearray.fromhex(hashString)[::-1].hex()
+    def reverse(hash_string: str) -> str:
+        return bytearray.fromhex(hash_string)[::-1].hex()
 
     @staticmethod
     def sha256(data: str) -> str:
         return hashlib.sha256(bytearray.fromhex(data)).hexdigest()
 
     @staticmethod
-    def doubleSha256(data: str) -> str:
+    def double_sha256(data: str) -> str:
         return Calculation.sha256(Calculation.sha256(data))
 
     @staticmethod
-    def doubleSha256Reverse(data: str) -> str:
+    def double_sha256_reverse(data: str) -> str:
         return bytearray.fromhex(Calculation.sha256(Calculation.sha256(data)))[::-1].hex()

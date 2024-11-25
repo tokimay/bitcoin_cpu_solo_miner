@@ -3,7 +3,7 @@ import random
 from bitcoin import BitcoinCore, Calculation
 
 
-isRegTest = False
+isRegTest = True
 user = 'user'  # change with your own
 password = 'userpass'  # change with your own
 myAddress = 'YOUR_BTC_ADDRESS'  # change with your own
@@ -15,7 +15,7 @@ else:
 
 
 """ if your address is generated in bitcoinCore """
-addressInfo = core.getAddressInfo(myAddress)
+addressInfo = core.get_address_info(myAddress)
 myPubKey = addressInfo['result']['pubkey']
 """ if address is generated in third party wallet """
 # myPubKey = "insert your pubKey"
@@ -32,7 +32,7 @@ while True:
         newExtraNonce = False
         refreshThreshold = 100_000_000
         print('extraNonce:', extraNonce)
-    tempBlock = core.getBlockTemplate()
+    tempBlock = core.get_block_template()
     print('block template refreshed.')
     target = int(tempBlock['result']['target'], 16)
 
@@ -57,14 +57,14 @@ while True:
             merkleBranch.append(trx['txid'])
             transactionsRaw = transactionsRaw + trx['data']
 
-    coinbase, cBiD = Calculation.coinbase(version=tempBlock['result']['version'], extraNonce=extraNonce,
+    coinbase, cBiD = Calculation.coinbase(version=tempBlock['result']['version'], extra_nonce=extraNonce,
                                           height=tempBlock['result']['height'],
-                                          coinbaseAmount=tempBlock['result']['coinbasevalue'],
-                                          scriptPubkeyWitness=tempBlock['result']['default_witness_commitment'],
-                                          addressPubKey=myPubKey)
+                                          coinbase_amount=tempBlock['result']['coinbasevalue'],
+                                          script_pubkey_witness=tempBlock['result']['default_witness_commitment'],
+                                          address_pub_key=myPubKey)
 
     merkleBranch.insert(0, cBiD)   # coinBase transaction ID as first transaction ID
-    merkleRoot = Calculation.merkleRoot(branchList=merkleBranch)
+    merkleRoot = Calculation.merkle_root(branch_list=merkleBranch)
     merkleRoot = Calculation.reverse(merkleRoot)
 
     # 4 bytes time
@@ -78,7 +78,7 @@ while True:
     # 4 byte nonce
     ''' int loop section will be calculated'''
 
-    lenTransactions = Calculation.lenVar(len(merkleBranch))
+    lenTransactions = Calculation.len_var(len(merkleBranch))
     transactionsRaw = coinbase + transactionsRaw
 
     nonceRange = int(tempBlock['result']['noncerange'], 16)
@@ -88,7 +88,7 @@ while True:
         blockHeader = (version + previousBlockhash + merkleRoot +
                        time + bits + (Calculation.reverse((hex(nonce))[2:].zfill(8))))
         blockRaw = blockHeader + lenTransactions + transactionsRaw
-        solution = Calculation.headerHash(blockHeader)
+        solution = Calculation.header_hash(blockHeader)
         if nonce % 1_000_000 == 0:
             print(f"{int(nonce/1_000_000)} mega nonce number checked {datetime.datetime.now()}")
             if nonce % refreshThreshold == 0:
@@ -97,9 +97,9 @@ while True:
                 print('going to re-fetch block template')
                 break  # exit loop to get new block template
         if int(solution, 16) < target:
-            block = core.submitBlock(blockRaw)
+            block = core.submit_block(blockRaw)
             if block['error'] is None:
-                b = core.getBlockchainInfo()
+                b = core.get_blockchain_info()
                 print(f"succeed \nheight  : {b['result']['blocks']} \nhash    :{b['result']['bestblockhash']}")
                 exit(0)
     if nonce >= nonceRange:

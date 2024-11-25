@@ -15,3 +15,24 @@ This code works correctly but just for educational purposes. </br>
 
 
 ***[In regtest you first must mine at least 500 blocks. Then start using code. ](https://bitcoin.stackexchange.com/questions/101927/bitcoin-in-regtest-throw-bad-cb-height-at-block-no-500)***
+
+Usage:
+
++ Clone the source:
+````shell 
+git clone https://github.com/tokimay/bitcoin_soloMiner
+```` 
++ Edit 'pyMiner.py' file in project:
+
+````python 
+isRegTest = False
+user = 'user'  # change with your own
+password = 'userpass'  # change with your own
+myAddress = 'YOUR_BTC_ADDRESS'  # change with your own
+
+""" if your address is generated in bitcoinCore """
+addressInfo = core.get_address_info(myAddress)
+myPubKey = addressInfo['result']['pubkey']
+""" if address is generated in third party wallet """
+myPubKey = "insert your pubKey"
+````
